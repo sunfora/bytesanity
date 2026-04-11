@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Create a temporary executable in shared memory
+EXE=$(mktemp /dev/shm/runner.XXXXXX)
+# Ensure it's deleted when the script exits
+trap 'rm -f "$EXE"' EXIT
+
+# Compile with -O3 for speed or -Wall for safety
+if clang -Wall "$1" -o "$EXE"; then
+    # Pass all remaining arguments to the binary
+    "$EXE" "${@:2}"
+fi
+
